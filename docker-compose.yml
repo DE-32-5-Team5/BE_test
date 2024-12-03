@@ -17,12 +17,13 @@ services:
 
   worker:
     build:
-      context: ./docker/spark  # 빌드 경로 지정
+      context: ./docker/worker  # 빌드 경로 지정
       dockerfile: Dockerfile
     image: spark-image:latest  # 빌드된 이미지 이름과 태그 지정
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_INSTANCES=1
     depends_on:
       - master
     deploy:
