@@ -53,5 +53,5 @@ def parkslot():
     limit 5;
     """
     df = jdbc()
-    parkslotJson = df.t oJSON().collect()
+    parkslotJson = df.toJSON().collect()
     return parkslotJson
