@@ -1,14 +1,16 @@
 from pyspark.sql import SparkSession
-import pandas as pd
+# import pandas as pd
 
 # Docker 내 Spark Master의 IP 주소 (Spark Master 컨테이너의 IP를 확인)
 spark = SparkSession.builder \
     .appName("PySpark Example") \
-    .master("spark://172.20.0.2:7077").getOrCreate()
+    .config("spark.jars",
+        "./mysql-connector-j-9.1.0/mysql-connector-j-9.1.0.jar") \
+    .master("spark://172.19.0.2:7077").getOrCreate()
 
 db_ip = input("input db_ip adress : ")
 kafka_ip = input("input kafka_ip adress : ")
-port = "3306" 
+port = "6033" 
 user = "fiveguys"
 passwd = input("input db pw code : ")
 db = "parkingissue"
@@ -31,7 +33,7 @@ def kafka():
         .option("kafka.bootstrap.servers", f"{kafka_ip}:9092") \
         .option("subscribe", "location_topic") \
         .load()
-    return kafka_df 
+    return kafka_df
 
 def jdbc():
     df = spark.read.format("jdbc") \
@@ -49,8 +51,7 @@ def parkslot():
     from parkingarea_info
     where park_lo between {lo_m} and {lo_p}
     and park_la between {la_m} and {la_p}
-    limit 5;
     """
     df = jdbc()
     parkslotJson = df.toJSON().collect()
-    return parkslotJson
+    return parkslotJson # 여기에서 json 으로 값 반환
