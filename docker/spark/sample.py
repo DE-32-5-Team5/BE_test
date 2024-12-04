@@ -37,7 +37,6 @@ def jdbc():
     df = spark.read.format("jdbc") \
                 .option("url", f"jdbc:mysql://{ip}:{port}/{db}") \
                 .option("driver", "com.mysql.cj.jdbc.Driver") \
-                .option("dbtable", table_name) \
                 .option("query", sql) \
                 .option("user", user) \
                 .option("password", passwd) \
