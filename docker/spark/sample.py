@@ -3,24 +3,28 @@ from pyspark.sql import SparkSession
 # Docker 내 Spark Master의 IP 주소 (Spark Master 컨테이너의 IP를 확인)
 spark = SparkSession.builder \
     .appName("PySpark Example") \
-    .master("spark://172.20.0.2:7077").getOrCreate()
+    .master("spark://172.19.0.2:7077").getOrCreate()
 
 ip = input("input ip adress : ")
 port = "3306" 
-user = "fiveguys"
+user = "root"
 passwd = input("input db pw code : ")
 db = "parkingissue"
 table_name = "parkingarea_info"
 
-lo = 37.49655145
-la = 127.0247831027794
+lo = 37.5176288053129
+la = 127.086737282438
+
+lo_m = lo - 0.09
+lo_p = lo + 0.09
+
+la_m = la - 0.11364
+la_p = la + 0.11364
 
 # PySpark 코드 실행
-sql = f"""select park_id, park_nm, park_addr 
+sql = f"""select park_id, park_nm, park_addr, park_lo, park_la 
 from parkingarea_info
-where park_lo between {lo} - 0.0045 and {lo} + 0.0045
-and park_la between {la} - 0.0057 and {la} + 0.0057
-limit 5;
+where park_lo between {lo_m} and {lo_p} and park_la between {la_m} and {la_p};
 """
 df = spark.read.format("jdbc") \
                 .option("url", f"jdbc:mysql://{ip}:{port}/{db}") \
