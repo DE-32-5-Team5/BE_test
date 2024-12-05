@@ -23,6 +23,8 @@ services:
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
     depends_on:
       - master
     deploy:
