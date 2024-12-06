@@ -10,6 +10,10 @@ from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 import json
 
+class LocationRequest(BaseModel):
+    latitude: float
+    longitude: float
+
 # MariaDB에서 SELECT SLEEP 쿼리를 수행하는 함수
 def get_db(lat: float, lon: float): # lat -> 37.. 인데 DB상으로는 park_lo, lon -> 127.. 인데 DB상으로는 park_la
     # 주변 500m 위경도 계산
@@ -22,7 +26,7 @@ def get_db(lat: float, lon: float): # lat -> 37.. 인데 DB상으로는 park_lo,
     la_p = lat + ra
 
     # MariaDB에 연결
-    connection = pymysql.connect(host="43.203.116.103", user="root", password="samdul2024$", db="parkingissue", charset='utf8', port = 6033)
+    connection = pymysql.connect(host="15.164.235.19", user="root", password="samdul2024$", db="parkingissue", charset='utf8', port = 6033)
     cursor = connection.cursor(pymysql.cursors.DictCursor)
     # DB에 park_la에 경도가 있고 park_lo에 위도가 있음 서로 바뀌어 버린 상황
     sql = f"""
@@ -49,7 +53,9 @@ app = FastAPI()
 origins = [
         "http://localhost:5500",
         "http://localhost:8000", 
-        "http://127.0.0.1:8000"
+        "http://127.0.0.1:8000",
+        "http://localhost:32771",
+        "http://localhost:507"
         ] 
 app.add_middleware( 
         CORSMiddleware, 
@@ -69,8 +75,10 @@ def read_items():
     # ... 데이터베이스 쿼리 실행 ...
     return df
 
-@app.get("/location")
-async def receive_location(latitude: float, longitude: float):
+@app.post("/location")
+async def receive_location(request: LocationRequest):
+    latitude = request.latitude
+    longitude = request.longitude
     dic = get_db(latitude, longitude)
     print(dic)
     return dic
